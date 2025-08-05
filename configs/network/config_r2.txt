@@ -1,0 +1,150 @@
+=~=~=~=~=~=~=~=~=~=~=~= PuTTY log 2025.01.16 16:24:06 =~=~=~=~=~=~=~=~=~=~=~=
+
+R2#show running-config
+Building configuration...
+
+Current configuration : 1963 bytes
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+!
+hostname R2
+!
+boot-start-marker
+boot-end-marker
+!
+!
+enable secret 5 $1$zKYF$oxRsd6BMf8ksPiD..hhse.
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+ --More--         !
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip cef
+no ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+cts logging verbose
+!
+!
+license udi pid CISCO2901/K9 sn FCZ162621JY
+license accept end user agreement
+license boot module c2900 technology-package securityk9
+!
+!
+ --More--         !
+redundancy
+!
+!
+!
+!
+!
+!
+class-map match-all Default
+ match access-group 103
+ match ip dscp default 
+class-map match-all Premium
+ match access-group 101
+ match access-group 102
+ match ip dscp ef 
+!
+policy-map VOIP
+ class Premium
+  priority 100
+policy-map DSCPVALUES
+ class Premium
+  set ip dscp ef
+ class Default
+ --More--           set ip dscp default
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Embedded-Service-Engine0/0
+ no ip address
+ shutdown
+!
+interface GigabitEthernet0/0
+ description LAN C Interface
+ ip address 10.6.2.1 255.255.255.0
+ duplex auto
+ speed auto
+ service-policy output DSCPVALUES
+!
+ --More--         interface GigabitEthernet0/1
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface Serial0/1/0
+ description LAN B Interface
+ ip address 10.6.1.2 255.255.255.0
+ service-policy output VOIP
+!
+interface Serial0/1/1
+ no ip address
+ shutdown
+ clock rate 2000000
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+ip route 0.0.0.0 0.0.0.0 Serial0/1/0
+!
+ --More--         !
+!
+access-list 101 permit udp any any range 10000 32768
+access-list 102 permit udp any any eq 5060
+access-list 103 permit tcp any eq 5001 any
+!
+control-plane
+!
+!
+banner motd ^C Restricted Access. ^C
+!
+line con 0
+ password 7 14141B180F0B
+ login
+line aux 0
+line 2
+ no activation-character
+ no exec
+ transport preferred none
+ transport output pad telnet rlogin lapb-ta mop udptn v120 ssh
+ stopbits 1
+line vty 0 4
+ password 7 121A0C041104
+ --More--          login
+ transport input none
+!
+scheduler allocate 20000 1000
+!
+end
+
+R2#                                                               

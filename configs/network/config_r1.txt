@@ -1,0 +1,155 @@
+=~=~=~=~=~=~=~=~=~=~=~= PuTTY log 2025.01.16 16:21:23 =~=~=~=~=~=~=~=~=~=~=~=
+ 
+R1#show running-config
+Building configuration...
+
+Current configuration : 2209 bytes
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+!
+hostname R1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+enable secret 5 $1$D6ul$c779WCivvPSD0Y0Yzaq5g/
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+ --More--         !
+ --More--         !
+ --More--         !
+ --More--         !
+ --More--         !
+ --More--         !
+ --More--         !
+ --More--         !
+ --More--         no ip domain lookup
+ --More--         ip cef
+ --More--         no ipv6 cef
+ --More--         !
+ --More--         multilink bundle-name authenticated
+ --More--         !
+ --More--         !
+ --More--         cts logging verbose
+ --More--         !
+ --More--         !
+license udi pid CISCO2901/K9 sn FCZ1742919K
+license accept end user agreement
+license boot module c2900 technology-package securityk9
+!
+!
+!
+redundancy
+!
+!
+!
+!
+!
+!
+class-map match-all Default
+ match access-group 103
+ match ip dscp default 
+class-map match-any Premium
+ match access-group 101
+ match access-group 102
+ match ip dscp ef 
+!
+policy-map VOIP
+ --More--          class Premium
+  priority 100
+policy-map DSCPVALUES
+ class Premium
+  set ip dscp ef
+ class Default
+  set ip dscp default
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+interface Embedded-Service-Engine0/0
+ no ip address
+ shutdown
+!
+interface GigabitEthernet0/0
+ description Connection to Internet
+ --More--          ip address 139.6.19.34 255.255.255.224
+ ip nat outside
+ ip virtual-reassembly in
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/1
+ ip address 10.6.0.1 255.255.255.0
+ ip nat inside
+ ip virtual-reassembly in
+ duplex auto
+ speed auto
+ service-policy output DSCPVALUES
+!
+interface Serial0/1/0
+ description LAN B Interface
+ ip address 10.6.1.1 255.255.255.0
+ ip nat inside
+ ip virtual-reassembly in
+ clock rate 125000
+ service-policy output VOIP
+!
+interface Serial0/1/1
+ --More--          no ip address
+ shutdown
+ clock rate 2000000
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+ip nat inside source list 1 interface GigabitEthernet0/0 overload
+ip route 0.0.0.0 0.0.0.0 GigabitEthernet0/0
+ip route 10.6.2.0 255.255.255.0 Serial0/1/0
+!
+!
+!
+access-list 1 permit 10.6.0.0 0.0.255.255
+access-list 101 permit udp any any eq 50040
+access-list 102 permit udp any any eq 5060
+access-list 103 permit tcp any any eq 5001
+!
+control-plane
+!
+!
+ --More--         !
+line con 0
+line aux 0
+line 2
+ no activation-character
+ no exec
+ transport preferred none
+ transport output pad telnet rlogin lapb-ta mop udptn v120 ssh
+ stopbits 1
+line vty 0 4
+ password 7 045802150C2E
+ login
+ transport input none
+!
+scheduler allocate 20000 1000
+!
+end
+
+R1#                                                               
